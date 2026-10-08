@@ -11,6 +11,8 @@ export interface AppConfig {
   supabaseAnonKey: string | null;
   isGeminiConfigured: boolean;
   geminiApiKey: string | null;
+  isRazorpayConfigured: boolean;
+  razorpayKeyId: string | null;
   isDemoMode: boolean;
   version: string;
 }
@@ -18,6 +20,7 @@ export interface AppConfig {
 const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || '').trim() || null;
 const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '').trim() || null;
 const geminiApiKey = (import.meta.env.GEMINI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY || '').trim() || null;
+const razorpayKeyId = (import.meta.env.VITE_RAZORPAY_KEY_ID || import.meta.env.RAZORPAY_KEY_ID || '').trim() || null;
 
 export const config: AppConfig = {
   isSupabaseConfigured: Boolean(supabaseUrl && supabaseAnonKey && supabaseUrl.startsWith('http')),
@@ -25,6 +28,8 @@ export const config: AppConfig = {
   supabaseAnonKey,
   isGeminiConfigured: Boolean(geminiApiKey && geminiApiKey.length > 10),
   geminiApiKey,
+  isRazorpayConfigured: Boolean(razorpayKeyId && razorpayKeyId.length > 5),
+  razorpayKeyId,
   isDemoMode: true, // Always true for prototype to clearly identify simulated data
   version: '1.0.0-prototype',
 };

@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { Citizen, DigiProProfile, Application, ConsentRecord } from '../types';
+import { Citizen, DigiProProfile, Application, ConsentRecord, PaymentRecord } from '../types';
 import { MOCK_CITIZENS } from '../data/mockCitizens';
 import { digiProService } from '../services/digipro';
 import { applicationService } from '../services/application';
 import { consentService } from '../services/consent';
+import { paymentService } from '../services/payment';
 
 export interface ToastNotification {
   id: string;
@@ -18,8 +19,11 @@ interface AppContextType {
   setActiveCitizenId: (id: string) => void;
   applications: Application[];
   consents: ConsentRecord[];
+  payments: PaymentRecord[];
   refreshData: () => Promise<void>;
   createApplication: (draft: Partial<Application>) => Promise<Application>;
+  markApplicationPaid: (applicationId: string, paymentId: string, amount: number) => Promise<Application | null>;
+  recordPayment: (record: Omit<PaymentRecord, 'id' | 'created_at'>) => Promise<PaymentRecord>;
   recordConsent: (record: Omit<ConsentRecord, 'id'>) => Promise<ConsentRecord>;
   revokeConsent: (consentId: string) => Promise<boolean>;
   toasts: ToastNotification[];
@@ -35,6 +39,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [activeProfile, setActiveProfile] = useState<DigiProProfile | null>(null);
   const [applications, setApplications] = useState<Application[]>([]);
   const [consents, setConsents] = useState<ConsentRecord[]>([]);
+  const [payments, setPayments] = useState<PaymentRecord[]>([]);
   const [toasts, setToasts] = useState<ToastNotification[]>([]);
 
   const showToast = useCallback((message: string, type: 'success' | 'info' | 'warning' | 'error' = 'info') => {
@@ -59,6 +64,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       const userConsents = await consentService.getConsentsForUser(citizenId);
       setConsents(userConsents);
+
+      const userPayments = await paymentService.getPaymentsForUser(citizenId);
+      setPayments(userPayments);
     } catch (err) {
       console.warn('Error loading user data:', err);
     }
@@ -86,8 +94,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       userId: activeCitizen.id,
     });
     await refreshData();
-    showToast(`Application ${created.id} submitted successfully!`, 'success');
     return created;
+  };
+
+  const handleMarkApplicationPaid = async (
+    applicationId: string,
+    paymentId: string,
+    amount: number
+  ): Promise<Application | null> => {
+    const updated = await applicationService.markApplicationAsPaid(applicationId, paymentId, amount);
+    await refreshData();
+    showToast(`Payment confirmed! Application ${applicationId} submitted successfully.`, 'success');
+    return updated;
+  };
+
+  const handleRecordPayment = async (
+    record: Omit<PaymentRecord, 'id' | 'created_at'>
+  ): Promise<PaymentRecord> => {
+    const saved = await paymentService.createPayment({
+      ...record,
+      user_id: activeCitizen.id,
+    });
+    await refreshData();
+    return saved;
   };
 
   const handleRecordConsent = async (record: Omit<ConsentRecord, 'id'>): Promise<ConsentRecord> => {
@@ -117,8 +146,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setActiveCitizenId,
         applications,
         consents,
+        payments,
         refreshData,
         createApplication: handleCreateApplication,
+        markApplicationPaid: handleMarkApplicationPaid,
+        recordPayment: handleRecordPayment,
         recordConsent: handleRecordConsent,
         revokeConsent: handleRevokeConsent,
         toasts,

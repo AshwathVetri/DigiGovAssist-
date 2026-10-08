@@ -134,34 +134,68 @@ export const ApplicationTrackingPage: React.FC = () => {
               <span className="font-mono text-xs font-bold text-[#0a2558] bg-[#f0f5fa] px-3 py-1 rounded border border-[#c2d8ec]">
                 Application ID: {application.id}
               </span>
-              <span className="text-xs font-bold text-[#046a38] bg-[#f0fdf4] border border-[#bbf7d0] px-3 py-1 rounded flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#046a38]"></span>
-                <span>Current Status: Application Submitted</span>
-              </span>
+              {application.paymentStatus === 'pending' || application.status === 'Payment Pending' ? (
+                <span className="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-300 px-3 py-1 rounded flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                  <span>Payment Pending: ₹ {application.feeAmount || 530}</span>
+                </span>
+              ) : (
+                <span className="text-xs font-bold text-[#046a38] bg-[#f0fdf4] border border-[#bbf7d0] px-3 py-1 rounded flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-[#046a38]"></span>
+                  <span>Payment Completed ✓ (Ready for Government Submission)</span>
+                </span>
+              )}
             </div>
 
             <div className="text-lg font-bold text-[#0f172a] pt-1">
               {application.serviceName}
             </div>
 
-            <div className="flex items-center gap-2 text-xs text-[#64748b]">
-              <Building2 className="w-4 h-4 text-[#0f4477]" />
-              <span>{application.department}</span>
+            <div className="flex flex-wrap items-center gap-3 text-xs text-[#64748b]">
+              <div className="flex items-center gap-1.5">
+                <Building2 className="w-4 h-4 text-[#0f4477]" />
+                <span>{application.department}</span>
+              </div>
               <span>•</span>
-              <Calendar className="w-4 h-4 text-[#64748b]" />
-              <span>Submitted: {application.submittedAt || application.updatedAt}</span>
+              <div className="flex items-center gap-1.5">
+                <Calendar className="w-4 h-4 text-[#64748b]" />
+                <span>{application.submittedAt ? `Submitted: ${application.submittedAt}` : `Updated: ${application.updatedAt}`}</span>
+              </div>
+              {application.paymentStatus === 'paid' && (
+                <>
+                  <span>•</span>
+                  <Link
+                    to={`/payment/${application.id}`}
+                    className="text-xs font-bold text-[#0f4477] hover:underline flex items-center gap-1"
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>View Payment Confirmation</span>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
 
-          {/* Official Barcode / QR Simulation */}
-          <div className="bg-[#f8fafc] border border-[#cbd5e1] p-3 rounded-xl flex items-center gap-3 shrink-0">
-            <div className="w-14 h-14 bg-white border border-[#cbd5e1] rounded p-1 flex items-center justify-center">
-              <QrCode className="w-12 h-12 text-[#0a2558]" />
-            </div>
-            <div className="text-xs space-y-0.5">
-              <div className="text-[10px] font-bold text-[#64748b] uppercase">Verification Token</div>
-              <div className="font-mono text-xs font-bold text-[#0a2558]">{application.id}</div>
-              <div className="text-[10px] text-[#046a38] font-semibold">DigiPro Verified ✓</div>
+          {/* Action Box / QR Simulation */}
+          <div className="flex flex-col items-end gap-2 shrink-0">
+            {application.paymentStatus === 'pending' || application.status === 'Payment Pending' ? (
+              <Link
+                to={`/payment/${application.id}`}
+                className="px-4 py-2.5 rounded-xl bg-[#0f4477] hover:bg-[#0a2558] text-white font-bold text-xs shadow-md transition-colors flex items-center gap-2 cursor-pointer"
+              >
+                <span>Pay Fee Now (Razorpay Test Mode)</span>
+              </Link>
+            ) : null}
+
+            <div className="bg-[#f8fafc] border border-[#cbd5e1] p-3 rounded-xl flex items-center gap-3">
+              <div className="w-14 h-14 bg-white border border-[#cbd5e1] rounded p-1 flex items-center justify-center">
+                <QrCode className="w-12 h-12 text-[#0a2558]" />
+              </div>
+              <div className="text-xs space-y-0.5">
+                <div className="text-[10px] font-bold text-[#64748b] uppercase">Verification Token</div>
+                <div className="font-mono text-xs font-bold text-[#0a2558]">{application.id}</div>
+                <div className="text-[10px] text-[#046a38] font-semibold">DigiPro Verified ✓</div>
+              </div>
             </div>
           </div>
         </div>

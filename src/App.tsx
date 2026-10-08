@@ -12,6 +12,7 @@ import { ApplicationTrackingPage } from './pages/ApplicationTrackingPage';
 import { DigiProHubPage } from './pages/DigiProHubPage';
 import { ConsentHistoryPage } from './pages/ConsentHistoryPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { PaymentPage } from './pages/PaymentPage';
 
 export function App() {
   return (
@@ -24,6 +25,7 @@ export function App() {
             <Route path="services" element={<ServicesCatalogPage />} />
             <Route path="services/:id" element={<ServiceDetailPage />} />
             <Route path="apply/:serviceId" element={<ApplicationFlowPage />} />
+            <Route path="payment/:applicationId" element={<PaymentPage />} />
             <Route path="applications" element={<ApplicationsPage />} />
             <Route path="applications/:id" element={<ApplicationTrackingPage />} />
             <Route path="digipro" element={<DigiProHubPage />} />

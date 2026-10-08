@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GovernmentService, DigiProProfile, ServiceReadiness } from '../../types';
 import { useApp } from '../../context/AppContext';
 import { ServiceRequirementEngine } from '../../services/government/requirementEngine';
 import { GovEmblem } from '../common/GovEmblem';
 import { PrototypeBadge } from '../common/PrototypeBadge';
+import { governmentFeeService } from '../../services/payment/governmentFeeService';
 import {
   CheckCircle2,
   FileCheck,
@@ -15,6 +16,7 @@ import {
   ShieldCheck,
   Info,
   Check,
+  CreditCard,
 } from 'lucide-react';
 
 interface AutoFillApplicationFormProps {
@@ -31,6 +33,15 @@ export const AutoFillApplicationForm: React.FC<AutoFillApplicationFormProps> = (
   const { createApplication } = useApp();
   const citizen = profile.citizen;
   const vehicle = profile.vehicles && profile.vehicles.length > 0 ? profile.vehicles[0] : null;
+
+  // Fee state from government fee database
+  const [statutoryFee, setStatutoryFee] = useState<number>(530);
+
+  useEffect(() => {
+    governmentFeeService.getFeeForService(service.id).then((sched) => {
+      setStatutoryFee(sched.totalFee);
+    });
+  }, [service.id]);
 
   // Form Data State
   const [formData, setFormData] = useState({
@@ -97,6 +108,9 @@ export const AutoFillApplicationForm: React.FC<AutoFillApplicationFormProps> = (
         autofilledFields: autofilled,
         readinessScore: readiness.percentage,
         isPrototypeSubmission: true,
+        status: 'Payment Pending',
+        paymentStatus: 'pending',
+        feeAmount: statutoryFee,
       });
 
       setConfirmModalOpen(false);
@@ -580,6 +594,8 @@ export const AutoFillApplicationForm: React.FC<AutoFillApplicationFormProps> = (
         <div className="p-6 bg-[#f8fafc] border-t border-[#cbd5e1] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="text-xs text-[#64748b]">
             Application Status: <strong className="text-[#046a38]">Ready for submission (100%)</strong>
+            <span className="hidden sm:inline text-slate-300 mx-2">|</span>
+            <span className="text-[#0a2558] font-bold">Government Statutory Fee: ₹ {statutoryFee.toLocaleString('en-IN')}</span>
           </div>
 
           <button
@@ -587,8 +603,8 @@ export const AutoFillApplicationForm: React.FC<AutoFillApplicationFormProps> = (
             disabled={!formData.declarationAccepted}
             className="px-8 py-3 rounded-lg bg-[#0f4477] hover:bg-[#0a2558] disabled:opacity-50 text-white font-bold text-xs shadow-2xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
           >
-            <Send className="w-4 h-4" />
-            <span>Submit Application</span>
+            <CreditCard className="w-4 h-4" />
+            <span>Proceed to Fee Payment (₹ {statutoryFee.toLocaleString('en-IN')})</span>
           </button>
         </div>
       </form>
@@ -602,22 +618,23 @@ export const AutoFillApplicationForm: React.FC<AutoFillApplicationFormProps> = (
             </div>
 
             <div>
-              <h3 className="text-base font-bold text-[#0a2558]">Confirm Submission</h3>
+              <h3 className="text-base font-bold text-[#0a2558]">Confirm & Proceed to Payment</h3>
               <p className="text-xs text-[#475569] mt-1 leading-relaxed">
-                You are submitting <strong className="text-[#0f172a]">{service.name}</strong> to the{' '}
-                {service.department}.
+                Your application for <strong className="text-[#0f172a]">{service.name}</strong> is verified and ready.
+                Proceed to remit the statutory government service fee through Razorpay Test Mode.
               </p>
             </div>
 
-            <div className="p-3 bg-[#f8fafc] border border-[#e2e8f0] rounded-lg text-left text-xs space-y-1 text-[#334155]">
+            <div className="p-3 bg-[#f8fafc] border border-[#e2e8f0] rounded-lg text-left text-xs space-y-1.5 text-[#334155]">
               <div>
                 <strong>Applicant:</strong> {formData.fullName}
               </div>
               <div>
-                <strong>Readiness:</strong> 100% (Verified via DigiPro)
+                <strong>Readiness Score:</strong> <span className="text-[#046a38] font-bold">100% (DigiPro Verified)</span>
               </div>
-              <div>
-                <strong>Statutory Fee:</strong> {service.fee}
+              <div className="flex justify-between items-center pt-1 border-t border-[#e2e8f0]">
+                <strong>Statutory Government Fee:</strong>
+                <span className="font-mono font-bold text-[#046a38] text-sm">₹ {statutoryFee.toLocaleString('en-IN')}</span>
               </div>
             </div>
 
@@ -637,11 +654,11 @@ export const AutoFillApplicationForm: React.FC<AutoFillApplicationFormProps> = (
                 className="flex-1 py-2 rounded-lg text-xs font-bold bg-[#0f4477] hover:bg-[#0a2558] text-white shadow-2xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
                 {isSubmitting ? (
-                  <span>Submitting...</span>
+                  <span>Opening Gateway...</span>
                 ) : (
                   <>
-                    <Send className="w-3.5 h-3.5" />
-                    <span>Confirm & File</span>
+                    <CreditCard className="w-3.5 h-3.5" />
+                    <span>Proceed to Payment</span>
                   </>
                 )}
               </button>

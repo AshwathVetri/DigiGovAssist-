@@ -72,3 +72,85 @@ VALUES
     '{"pucNumber": "PUC-COIM-99124", "vehicleNumber": "TN 38 BK 4920", "emissionStatus": "Pass", "validTill": "14-11-2026"}'::jsonb,
     'DigiPro Prototype'
 );
+
+-- Initial Indicative Government Service Fees
+INSERT INTO service_fees (id, service_id, fee_name, amount, currency, department, state, effective_from, notes)
+VALUES
+(
+    'fee-vahan-transfer',
+    'vehicle_ownership_transfer',
+    'Vehicle Ownership Transfer Fee (Smart Card RC + Postal Dispatch)',
+    530.00,
+    'INR',
+    'Ministry of Road Transport & Highways (Parivahan)',
+    'All India / Central (Rule 81 CMV Rules)',
+    '2026-01-01',
+    'Smart Card RC fee: ₹200, Transfer fee: ₹300, Speed post dispatch: ₹30'
+),
+(
+    'fee-sarathi-ll',
+    'learner_license',
+    'Learner Licence Issue & Online Test Fee',
+    200.00,
+    'INR',
+    'Ministry of Road Transport & Highways (Sarathi)',
+    'All India / Central (Rule 81 CMV Rules)',
+    '2026-01-01',
+    'Learner Licence fee: ₹150, Online test fee: ₹50'
+),
+(
+    'fee-sarathi-dl',
+    'driving_license',
+    'Driving Licence Issue & Practical Driving Test Fee',
+    500.00,
+    'INR',
+    'Ministry of Road Transport & Highways (Sarathi)',
+    'All India / Central (Rule 81 CMV Rules)',
+    '2026-01-01',
+    'Driving Licence fee: ₹200, Driving competence test fee: ₹300'
+),
+(
+    'fee-edistrict-income',
+    'income_certificate',
+    'Revenue Department Processing & CSC User Charge',
+    60.00,
+    'INR',
+    'State Revenue & Disaster Management Department',
+    'State Revenue / e-District',
+    '2026-01-01',
+    'Statutory government fee: ₹30, CSC user facilitation: ₹30'
+),
+(
+    'fee-edistrict-residence',
+    'residence_certificate',
+    'Nativity / Domicile Certificate Statutory Processing',
+    60.00,
+    'INR',
+    'State Revenue Department',
+    'State Revenue / e-District',
+    '2026-01-01',
+    'Statutory revenue verification charge'
+),
+(
+    'fee-corp-birth',
+    'birth_certificate',
+    'Municipal Corporation Birth Search & Digitized Copy Fee',
+    50.00,
+    'INR',
+    'Directorate of Municipal Administration',
+    'Urban Local Bodies / Municipal Corporation',
+    '2026-01-01',
+    'Digital copy search and certified extract fee'
+),
+(
+    'fee-udyam-msme',
+    'business_registration',
+    'Udyam National MSME Registration Portal Charge',
+    0.00,
+    'INR',
+    'Ministry of Micro, Small and Medium Enterprises',
+    'Government of India (Free Portal)',
+    '2026-01-01',
+    'Nil (Official Udyam portal registration is completely free of charge)'
+)
+ON CONFLICT (id) DO NOTHING;

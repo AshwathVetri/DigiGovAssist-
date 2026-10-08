@@ -90,7 +90,7 @@ export const ApplicationFlowPage: React.FC = () => {
         service={service}
         profile={activeProfile}
         onSubmitSuccess={(createdAppId) => {
-          navigate(`/applications/${createdAppId}`);
+          navigate(`/payment/${createdAppId}`);
         }}
       />
     </div>

@@ -141,12 +141,50 @@ export interface ConsentRecord {
 
 export type ApplicationStatus = 
   | 'Draft'
+  | 'Payment Pending'
   | 'Submitted'
   | 'In Review'
   | 'Verification Pending'
   | 'Approved'
   | 'Completed'
   | 'Rejected';
+
+export type PaymentStatus = 
+  | 'created' 
+  | 'pending' 
+  | 'paid' 
+  | 'failed' 
+  | 'cancelled';
+
+export interface PaymentRecord {
+  id: string; // e.g. pay_rec_xxx
+  application_id: string;
+  user_id: string;
+  service_id: string;
+  service_name?: string;
+  razorpay_order_id?: string;
+  razorpay_payment_id?: string;
+  razorpay_signature?: string;
+  amount: number;
+  currency: string;
+  status: PaymentStatus;
+  created_at: string;
+  paid_at?: string;
+  notes?: string;
+  is_test_mode?: boolean;
+}
+
+export interface ServiceFeeRecord {
+  id: string;
+  service_id: string;
+  fee_name: string;
+  amount: number;
+  currency: string;
+  department: string;
+  state: string;
+  effective_from: string;
+  notes: string;
+}
 
 export interface ApplicationEvent {
   id: string;
@@ -163,6 +201,9 @@ export interface Application {
   serviceName: string;
   department: string;
   status: ApplicationStatus;
+  paymentStatus?: PaymentStatus;
+  paymentId?: string;
+  feeAmount?: number;
   readinessScore: number;
   submittedAt?: string;
   updatedAt: string;

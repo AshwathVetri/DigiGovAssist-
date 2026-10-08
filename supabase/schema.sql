@@ -110,3 +110,31 @@ CREATE TABLE IF NOT EXISTS ai_conversations (
     recommended_services JSONB NOT NULL DEFAULT '[]'::jsonb,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+-- 9. Government Service Fees Catalog (Configurable government fee database)
+CREATE TABLE IF NOT EXISTS service_fees (
+    id TEXT PRIMARY KEY,
+    service_id TEXT NOT NULL,
+    fee_name TEXT NOT NULL,
+    amount NUMERIC(10,2) NOT NULL,
+    currency TEXT NOT NULL DEFAULT 'INR',
+    department TEXT NOT NULL,
+    state TEXT NOT NULL DEFAULT 'All India / Central',
+    effective_from DATE DEFAULT CURRENT_DATE,
+    notes TEXT
+);
+
+-- 10. Payments Table (Razorpay test integration & fee settlement)
+CREATE TABLE IF NOT EXISTS payments (
+    id TEXT PRIMARY KEY,
+    application_id TEXT NOT NULL,
+    user_id TEXT NOT NULL,
+    service_id TEXT NOT NULL,
+    razorpay_order_id TEXT,
+    razorpay_payment_id TEXT,
+    amount NUMERIC(10,2) NOT NULL,
+    currency TEXT NOT NULL DEFAULT 'INR',
+    status TEXT NOT NULL CHECK (status IN ('created', 'pending', 'paid', 'failed', 'cancelled')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    paid_at TIMESTAMP WITH TIME ZONE
+);

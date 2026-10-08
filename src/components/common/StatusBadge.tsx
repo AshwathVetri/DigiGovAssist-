@@ -15,6 +15,13 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
           Draft
         </span>
       );
+    case 'Payment Pending':
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-300">
+          <Clock className="w-3.5 h-3.5 text-amber-600" />
+          Payment Pending
+        </span>
+      );
     case 'Submitted':
       return (
         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-800 border border-blue-200">
