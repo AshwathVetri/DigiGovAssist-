@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#f8fafc] text-[#0f172a] font-sans antialiased selection:bg-gov-100 selection:text-gov-900;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Accessibility focus ring */
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-gov-700;
+  }
+}
+
+/* Accessibility font scale classes */
+html.font-size-small {
+  font-size: 14px;
+}
+html.font-size-normal {
+  font-size: 16px;
+}
+html.font-size-large {
+  font-size: 18px;
+}
+
+/* High Contrast Mode */
+html.high-contrast body {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+html.high-contrast .bg-white,
+html.high-contrast .bg-slate-50,
+html.high-contrast .bg-gov-50 {
+  background-color: #0a0a0a !important;
+  color: #ffffff !important;
+  border-color: #555555 !important;
+}
+html.high-contrast .text-slate-900,
+html.high-contrast .text-slate-800,
+html.high-contrast .text-slate-700,
+html.high-contrast .text-slate-600 {
+  color: #f1f5f9 !important;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Tricolor ribbon */
+.tricolor-stripe {
+  background: linear-gradient(to right, #ff671f 33.33%, #ffffff 33.33%, #ffffff 66.66%, #046a38 66.66%);
+  height: 3px;
+}
+
+/* Stepper shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Print layout for Government Acknowledgment Slips */
+@media print {
+  header, footer, nav, .no-print {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
+  }
+  .print-only {
+    display: block !important;
+  }
+}
